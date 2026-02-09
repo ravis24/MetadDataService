@@ -14,6 +14,8 @@ from .serializers import (
 
 class DatasetAPIView(APIView):
 
+    """List and create datasets."""
+
     def get(self, request):
         datasets = Dataset.objects.all()
         serializer = DatasetSerializer(datasets, many=True)
@@ -34,6 +36,8 @@ class DatasetAPIView(APIView):
 
 
 class DatasetDetailAPIView(APIView):
+
+    """Retrieve, update, or delete a dataset."""
 
     def get_object(self, pk):
         try:
@@ -87,6 +91,8 @@ class DatasetDetailAPIView(APIView):
 
 
 class DataElementAPIView(APIView):
+
+    """Manage data elements belonging to a dataset."""
 
     def get(self, request, dataset_id):
         elements = DataElement.objects.filter(dataset_id=dataset_id)
