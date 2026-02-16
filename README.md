@@ -50,6 +50,15 @@ A composite uniqueness constraint ensures that a field name is unique within a d
 
 ---
 
+### Data Element APIs
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/datasets/<id>/elements/` | List all elements in a dataset |
+| POST | `/api/datasets/<id>/elements/` | Create a data element in a dataset |
+
+---
+
 ## How to Run the Application
 
 ```bash
