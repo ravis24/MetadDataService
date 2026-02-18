@@ -59,6 +59,15 @@ A composite uniqueness constraint ensures that a field name is unique within a d
 
 ---
 
+## Assumptions and Trade-offs
+
+- SQLite used for simplicity in development.
+- Basic APIView used instead of ViewSets for clarity.
+- Filtering implemented at query level.
+- Authentication not implemented as it was not required in scope.
+- Nested endpoint structure chosen to reflect parent-child relationship.
+
+
 ## How to Run the Application
 
 ```bash

@@ -26,6 +26,7 @@ class DataElement(models.Model):
     name = models.CharField(max_length=100)
     data_type = models.CharField(max_length=20, choices=DATA_TYPES)
     is_required = models.BooleanField(default=False)
+    is_pii = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -128,3 +128,48 @@ class DataElementAPITest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
+    def test_create_data_element_with_pii(self):
+        data = {
+            "name": "email",
+            "data_type": "string",
+            "is_required": True,
+            "is_pii": True
+        }
+
+        response = self.client.post(
+            f"/api/datasets/{self.dataset.id}/elements/",
+            data,
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.data["is_pii"])
+
+
+    def test_filter_data_elements_by_name(self):
+        DataElement.objects.create(
+            dataset=self.dataset,
+            name="email",
+            data_type="string",
+            is_required=True,
+            is_pii=True
+        )
+
+        DataElement.objects.create(
+            dataset=self.dataset,
+            name="age",
+            data_type="integer",
+            is_required=False,
+            is_pii=False
+        )
+
+        response = self.client.get(
+            f"/api/datasets/{self.dataset.id}/elements/?name=email"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["name"], "email")
+
+
+

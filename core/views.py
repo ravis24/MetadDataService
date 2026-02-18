@@ -92,25 +92,71 @@ class DatasetDetailAPIView(APIView):
 
 class DataElementAPIView(APIView):
 
-    """Manage data elements belonging to a dataset."""
+    """Manage data elements belonging to a dataset with filtering support."""
+
+    def get_dataset(self, dataset_id):
+        try:
+            return Dataset.objects.get(pk=dataset_id)
+        except Dataset.DoesNotExist:
+            return None
 
     def get(self, request, dataset_id):
-        elements = DataElement.objects.filter(dataset_id=dataset_id)
+        dataset = self.get_dataset(dataset_id)
+        if not dataset:
+            return Response(
+                {"error": "Dataset not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        elements = DataElement.objects.filter(dataset=dataset)
+
+        # 🔍 Filtering Support
+        name = request.GET.get("name")
+        data_type = request.GET.get("data_type")
+        is_required = request.GET.get("is_required")
+        is_pii = request.GET.get("is_pii")
+
+        if name:
+            elements = elements.filter(name__icontains=name)
+
+        if data_type:
+            elements = elements.filter(data_type=data_type)
+
+        if is_required is not None:
+            elements = elements.filter(
+                is_required=is_required.lower() == "true"
+            )
+
+        if is_pii is not None:
+            elements = elements.filter(
+                is_pii=is_pii.lower() == "true"
+            )
+
         serializer = DataElementSerializer(elements, many=True)
         return Response(serializer.data)
 
     def post(self, request, dataset_id):
+        dataset = self.get_dataset(dataset_id)
+        if not dataset:
+            return Response(
+                {"error": "Dataset not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
         serializer = DataElementSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(dataset_id=dataset_id)
+            serializer.save(dataset=dataset)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
             )
+
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
 
 
 
